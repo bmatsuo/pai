@@ -1,0 +1,10 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/pai.t
+t/AlsaState.t
+t/AlsaState-Parser.t
+scripts/pai.pm
+lib/AlsaState.pm
+lib/AlsaState/Parser.pm
