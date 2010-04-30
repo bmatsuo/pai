@@ -208,6 +208,17 @@ current alsa state from alsactl.
 =for Euclid:
 	file.type: readable
 
+=item --dry-run | -d
+
+Don't actually update alsactl; just try to parse the alsa state and modify
+the internal data structure representing the state.
+
+It's a good idea to use this option with -v.
+
+=item --versbose | -v
+
+Print the modified alsa state to stdout.
+
 =item --version
 
 =item --usage
