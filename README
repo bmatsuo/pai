@@ -4,7 +4,7 @@ pai version 0.01
 DESCRIPTION
 
 This program is designed to control your computer's alsa audio driver. It
-can be used to mute, toggle functionality, or change valume on speakers, 
+can be used to mute, toggle functionality, or change volume on speakers, 
 headphones, or the master channel.
 
 The control available in this program should be equal to that available
