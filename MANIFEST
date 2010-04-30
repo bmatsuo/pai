@@ -5,6 +5,6 @@ README
 t/pai.t
 t/AlsaState.t
 t/AlsaState-Parser.t
-scripts/pai.pm
-lib/AlsaState.pm
-lib/AlsaState/Parser.pm
+scripts/pai
+lib/App/Pai/AlsaState.pm
+lib/App/Pai/AlsaState/Parser.pm

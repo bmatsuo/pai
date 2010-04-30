@@ -6,7 +6,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use Test::More tests => 2;
-BEGIN { use_ok('AlsaState::Parser') };
+BEGIN { use_ok('App::Pai::AlsaState::Parser') };
 
 #########################
 
@@ -145,7 +145,7 @@ state.Intel {
 EOSTATE
 # End of the 'typical' state output
 
-my $alsa_state_1 = eval {AlsaState::Parser->parse($state_1)};
+my $alsa_state_1 = eval {App::Pai::AlsaState::Parser->parse($state_1)};
 
 ok(!$@, "parse a 'typical' state");
 

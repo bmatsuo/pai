@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # Use perldoc or option --man to read documentation
-our $VERSION = '0.01';
+our $version = '0.01';
 
 ########################################################################
 # MODULES
@@ -20,7 +20,7 @@ use File::Temp;
 use Readonly;
 
 # Include private modules.
-use AlsaState;
+use App::Pai::AlsaState;
 
 ########################################################################
 # GENERAL GLOBAL VARIABLES
@@ -49,13 +49,13 @@ my $exitcode = 0;
 sub main{
 
     # Read the current alsa state.
-    my $current_alsa_state = AlsaState->get(
+    my $current_alsa_state = App::Pai::AlsaState->get(
         file => $opt{'--state-file'},
         card => $opt{'--card'},
     );
 
     my $headphone_volume_control 
-        = AlsaState->find_control_named(
+        = App::Pai::AlsaState->find_control_named(
             'Headphone Playback Volume',
             $current_alsa_state);
 
@@ -80,9 +80,10 @@ sub main{
     my $mic_boost = $opt{'--set-mic-boost'};
     # do something here.
 
-    AlsaState->control_level($headphone_volume_control, 0.5);
+    App::Pai::AlsaState->control_level($headphone_volume_control, 0.5);
 
-    my $state_string = AlsaState->state_string($current_alsa_state);
+    my $state_string 
+        = App::Pai::AlsaState->state_string($current_alsa_state);
     print $state_string;
 
     exit($exitcode);
