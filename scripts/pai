@@ -51,8 +51,7 @@ sub main{
     # Read the current alsa state.
     my $current_alsa_state = App::Pai::AlsaState->get(
         file => $opt{'--state-file'},
-        card => $opt{'--card'},
-    );
+        card => $opt{'--card'},);
 
     # Toggle any switches.
     my @to_toggle = @{$opt{'--toggle'} || []};
@@ -60,8 +59,8 @@ sub main{
         App::Pai::AlsaState->control_toggle(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
-                    $connection || 'master', 'switch')));
-    }
+                    $connection || 'master', 'switch'))); }
+
     # Set volumes.
     my @volumes = @{$opt{'--set-volume'} || []};
     for my $conn_vol (@volumes) {
@@ -70,24 +69,29 @@ sub main{
         App::Pai::AlsaState->control_level(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
-                    $connection || 'master', 'volume')), $volume);
-    }
+                    $connection || 'master', 'volume')), $volume); }
+
     # Mute connections.
     my @to_mute = $opt{'--mute'};
     for my $connection (@to_mute) {
-        App::Pai::AlsaState->set_level(
+        App::Pai::AlsaState->control_level(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
-                    $connection || 'master', 'volume')), 0);
-        #mute($connection || 'master');
-    }
+                    $connection || 'master', 'volume')), 0); }
+
     # Set mic boost.
     my $mic_boost = $opt{'--set-mic-boost'};
     # do something here.
 
-    my $state_string 
-        = App::Pai::AlsaState->state_string($current_alsa_state);
-    print $state_string;
+    if (defined $opt{'--verbose'}) {
+        my $state_string 
+            = App::Pai::AlsaState->state_string($current_alsa_state);
+        print $state_string;
+    }
+
+    exit 0 if defined $opt{'--dry-run'};
+
+    print "Have not yet implemented updating of the alsa state.";
 
     exit($exitcode);
 }
