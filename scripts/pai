@@ -105,7 +105,7 @@ sub main{
 
     exit 0 if defined $opt{'--dry-run'};
 
-    print "Have not yet implemented updating of the alsa state.";
+    App::Pai::AlsaState->commit($current_alsa_state, $opt{'--card'})
 
     exit($exitcode);
 }
@@ -293,3 +293,8 @@ but they will not be modifiable.
 
 ©Bryan Matsuo (bryan.matsuo@gmail.com)
 
+=License
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.10.0 or,
+at your option, any later version of Perl 5 you may have available.
