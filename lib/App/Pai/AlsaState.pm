@@ -226,6 +226,53 @@ sub _is_valid_level {
     return 0 <= $level && $level <= 1;
 }
 
+# Subroutine: control_toggle($control)
+# Type: INTERFACE SUB
+# Purpose: 
+#   Toggle the boolean value of $control.
+# Returns: 
+#   The new value of the control.
+sub control_toggle {
+    my ($control) = @_;
+
+    my $boolean = control_switch($control);
+
+    return 
+        control_switch(
+            $control, 
+            $boolean =~ m/\Atrue\z/xms ? 'true' : 'false');
+}
+
+# Subroutine:   control_switch($control, $boolean)
+#               control_switch($control)
+# Type: INTERFACE SUB
+# Purpose: 
+#   Set the value of a control toggle switch if given a boolean value.
+#   Boolean values must be 'true' or 'false'
+# Returns: 
+#   'true' or 'false'
+sub control_switch {
+    my ($control, $boolean) = @_;
+
+    my $name =  $control->{'name'};
+
+    croak("$boolean is not 'true' or 'false'.\n")
+        if (defined $boolean && $boolean !~ m/\Atrue|false\z/xms);
+    
+
+    croak("control $name does not accept boolean values.\n")
+        if (! $control->{'type'} eq 'BOOLEAN' );
+
+    if (!defined $boolean) {
+        for my $value (@{$control->{'values'}}) {
+            $value->{'data'} = $boolean;
+        }
+        return $boolean;
+    }
+
+    return map {$_->{'data'}} @{$control->{'values'}};
+}
+
 # Subroutine:   control_level($control, $level)
 #               control_level($control)
 # Type: INTERFACE SUB
@@ -269,6 +316,8 @@ sub control_level {
         for my $value (@{$control->{'values'}}) {
             $value->{'data'} = $new_level;
         }
+
+        return $new_level;
     }
 
     return map {$_->{'data'}} @{$control->{'values'}};

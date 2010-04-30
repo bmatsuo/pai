@@ -54,33 +54,36 @@ sub main{
         card => $opt{'--card'},
     );
 
-    my $headphone_volume_control 
-        = App::Pai::AlsaState->find_control_named(
-            'Headphone Playback Volume',
-            $current_alsa_state);
-
     # Toggle any switches.
     my @to_toggle = @{$opt{'--toggle'} || []};
     for my $connection (@to_toggle) {
-        #toggle($connection || 'master');
+        App::Pai::AlsaState->control_toggle(
+            App::Pai::AlsaState->find_control_named(
+                App::Pai::AlsaState->control_name(
+                    $connection || 'master', 'switch')));
     }
     # Set volumes.
     my @volumes = @{$opt{'--set-volume'} || []};
     for my $conn_vol (@volumes) {
-        #set_volume(
-        #   $conn_vol->{'connection'} || 'master', 
-        #   $conn_vol->{volume})
+        my ($connection, $volume) 
+            = ($conn_vol->{'connection'}, $conn_vol->{'volume'});
+        App::Pai::AlsaState->control_level(
+            App::Pai::AlsaState->find_control_named(
+                App::Pai::AlsaState->control_name(
+                    $connection || 'master', 'volume')), $volume);
     }
     # Mute connections.
     my @to_mute = $opt{'--mute'};
     for my $connection (@to_mute) {
+        App::Pai::AlsaState->set_level(
+            App::Pai::AlsaState->find_control_named(
+                App::Pai::AlsaState->control_name(
+                    $connection || 'master', 'volume')), 0);
         #mute($connection || 'master');
     }
     # Set mic boost.
     my $mic_boost = $opt{'--set-mic-boost'};
     # do something here.
-
-    App::Pai::AlsaState->control_level($headphone_volume_control, 0.5);
 
     my $state_string 
         = App::Pai::AlsaState->state_string($current_alsa_state);
