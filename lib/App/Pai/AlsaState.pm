@@ -46,15 +46,18 @@ my %control_names = (
 #   Name of the $type (switch/volume/...) controller for $connection
 #   (speaker/headphone/...).
 sub control_name {
-    my ($connection, $type) = @_;
+    my ($class,$connection, $type) = @_;
 
     my $control_name_ref = $control_names{$connection};
 
-    return if !defined $control_name_ref;
+
+    croak("Couldn't find connection  $connection") 
+        if !defined $control_name_ref;
 
     my $control = $control_name_ref->{$type};
 
-    return if !defined $control;
+    croak("Couldn't find control $connection/$type") 
+        if !defined $control;
 
     return $control;
 }
@@ -149,7 +152,8 @@ sub commit {
 # Returns: 
 #   The result of App::Pai::AlsaState::Parser->parse() on the raw 
 #   string of the requested alsa state.
-sub get { return App::Pai::AlsaState::Parser->parse(get_raw(@_)); }
+sub get { 
+    return App::Pai::AlsaState::Parser->parse(get_raw(@_)); }
 
 # Subroutine: get_raw(filename => undef, card => undef)
 # Type: INTERNAL SUB
@@ -201,11 +205,14 @@ sub get_raw {
 sub find_control_named {
     my ($class, $name, $alsa_state) = @_;
 
-    croak("find_contol_named(): name not given\n") if !defined $name;
+    croak("find_contol_named(): name not given\n") 
+        if !defined $name;
 
-    croak("find_control_named(): alsa_state is not defined\n") if !defined $alsa_state;
+    croak("find_control_named(): alsa_state is not defined\n") 
+        if !defined $alsa_state;
 
-    my ($control) = grep {$_->{'name'} eq qq{'$name'}} @{$alsa_state->{'controls'}};
+    my ($control) 
+        = grep {$_->{'name'} eq qq{'$name'}} @{$alsa_state->{'controls'}};
 
     croak("Couldn't find control named $name in control list.\n") 
         if !defined $control;
@@ -233,7 +240,7 @@ sub _is_valid_level {
 # Returns: 
 #   The new value of the control.
 sub control_toggle {
-    my ($control) = @_;
+    my ($class, $control) = @_;
 
     my $boolean = control_switch($control);
 
@@ -252,7 +259,7 @@ sub control_toggle {
 # Returns: 
 #   'true' or 'false'
 sub control_switch {
-    my ($control, $boolean) = @_;
+    my ($class, $control, $boolean) = @_;
 
     my $name =  $control->{'name'};
 

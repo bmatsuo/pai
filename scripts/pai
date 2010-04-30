@@ -56,28 +56,42 @@ sub main{
     # Toggle any switches.
     my @to_toggle = @{$opt{'--toggle'} || []};
     for my $connection (@to_toggle) {
+        $connection = 'master' 
+            if !defined $connection or $connection =~ m/\A\z/xms;
         App::Pai::AlsaState->control_toggle(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
-                    $connection || 'master', 'switch'))); }
+                    $connection, 
+                    'switch'), 
+                $current_alsa_state)); }
 
     # Set volumes.
     my @volumes = @{$opt{'--set-volume'} || []};
     for my $conn_vol (@volumes) {
         my ($connection, $volume) 
             = ($conn_vol->{'connection'}, $conn_vol->{'volume'});
+        $connection = 'master' 
+            if !defined $connection or $connection =~ m/\A\z/xms;
         App::Pai::AlsaState->control_level(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
-                    $connection || 'master', 'volume')), $volume); }
+                    $connection, 
+                    'volume'), 
+                $current_alsa_state), 
+            $volume); }
 
     # Mute connections.
-    my @to_mute = $opt{'--mute'};
+    my @to_mute = @{$opt{'--mute'} || []};
     for my $connection (@to_mute) {
+        $connection = 'master' 
+            if !defined $connection or $connection =~ m/\A\z/xms;
         App::Pai::AlsaState->control_level(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
-                    $connection || 'master', 'volume')), 0); }
+                    $connection, 
+                    'volume'), 
+                $current_alsa_state), 
+            0); }
 
     # Set mic boost.
     my $mic_boost = $opt{'--set-mic-boost'};
@@ -150,7 +164,7 @@ or 'beep'.
 
 =for Euclid:
 	repeatable
-	connection.type: /^(?:master|speaker|headphone|mic|beep)$/
+	connection.type: /master|speaker|headphone|mic|beep/
 
 =item -v [<connection>:]<volume> | --set-volume [=] [<connection>:]<volume>
 
@@ -166,16 +180,16 @@ program has completed.
 
 =for Euclid:
 	repeatable
-	connection.type: /^(?:master|speaker|headphone|mic|beep|pcm)$/
+	connection.type: /master|speaker|headphone|mic|beep|pcm/
 	volume.type: number, 0 <= volume && volume <= 1
 
-=item -m [<connection>] | --mute [=] [<connection>]
+=item -m [<mute_conn>] | --mute [=] [<mute_conn>]
 
 Mute a specified connection. 
 
-'master' will be muted if no connection is specified.
+'master' will be muted if no mute_conn is specified.
 
-This is identical to the option "--set-volume=<connection>:0",
+This is identical to the option "--set-volume=<mute_conn>:0",
 but will take precidence over any other --set-volume option on the same
 connection.
 
@@ -183,7 +197,7 @@ This option is repeatable.
 
 =for Euclid:
 	repeatable
-	connection.type: /^(?:master|speaker|headphone|mic|beep|pcm)$/
+	mute_conn.type: /master|speaker|headphone|mic|beep|pcm/
 
 =item -b <boost> | --set-mic-boost [=] <boost>
 
@@ -212,14 +226,14 @@ current alsa state from alsactl.
 =for Euclid:
 	file.type: readable
 
-=item --dry-run | -d
+=item --dry-run
 
 Don't actually update alsactl; just try to parse the alsa state and modify
 the internal data structure representing the state.
 
 It's a good idea to use this option with -v.
 
-=item --versbose | -v
+=item --verbose
 
 Print the modified alsa state to stdout.
 
