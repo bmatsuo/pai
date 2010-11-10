@@ -2,6 +2,7 @@
 package App::Pai::AlsaState;
 
 use App::Pai::AlsaState::Parser;
+use POSIX qw{ceil};
 
 use Carp;
 
@@ -62,7 +63,7 @@ sub control_name {
     return $control;
 }
 
-# Subroutine: alsa_state_string($state)
+# Subroutine: state_string($state)
 # Type: INTERFACE SUB 
 # Purpose: 
 #   Format an object with structure as returned by parse_alsa_state as a
@@ -71,7 +72,7 @@ sub control_name {
 # Returns: 
 #   The formatted alsa state string.
 sub state_string {
-    my ($class, $state) = @_;
+    my ($state) = @_;
 
     my $state_str = "state.Intel {\n";
 
@@ -81,7 +82,7 @@ sub state_string {
 
         for my $comment (@{$control->{'comments'}}) {
             $state_str 
-                .= "\t\tcomment.$comment->{'type'} $comment->{'value'}\n";
+                .= "\t\tcomment.$comment->{'ctype'} $comment->{'value'}\n";
         }
 
         $state_str .= "\t\tiface $control->{'interface'}\n";
@@ -95,6 +96,8 @@ sub state_string {
 
             $state_str .= " $value->{'data'}\n";
         }
+
+        $state_str .= "\t}\n";
     }
 
     $state_str .= "}\n";
@@ -317,7 +320,7 @@ sub control_level {
             croak("can't find range of control $name.\n")
         }
 
-        my $new_level = $min + $level * ($max - $min);
+        my $new_level = ceil($min + $level * ($max - $min));
 
         #print "setting values to $new_level\n";
         for my $value (@{$control->{'values'}}) {

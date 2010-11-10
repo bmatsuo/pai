@@ -99,13 +99,13 @@ sub main{
 
     if (defined $opt{'--verbose'}) {
         my $state_string 
-            = App::Pai::AlsaState->state_string($current_alsa_state);
+            = App::Pai::AlsaState::state_string($current_alsa_state);
         print $state_string;
     }
 
-    exit 0 if defined $opt{'--dry-run'};
+    exit 0 if $opt{'--dry-run'};
 
-    App::Pai::AlsaState->commit($current_alsa_state, $opt{'--card'})
+    App::Pai::AlsaState->commit($current_alsa_state, $opt{'--card'});
 
     exit($exitcode);
 }
@@ -293,7 +293,7 @@ but they will not be modifiable.
 
 ©Bryan Matsuo (bryan.matsuo@gmail.com)
 
-=License
+=head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.0 or,
