@@ -54,6 +54,7 @@ sub main{
 
     # Toggle any switches.
     my @to_toggle = @{$opt{'--toggle'} || []};
+    push @to_toggle, 'master' if $opt{'-T'};
     for my $connection (@to_toggle) {
         $connection = 'master' 
             if !defined $connection || $connection =~ m/\A\z/xms;
@@ -66,6 +67,10 @@ sub main{
 
     # Set volumes.
     my @volumes = @{$opt{'--set-volume'} || []};
+    if ($opt{'-V'}) {
+        push @volumes, 
+            {'connection' => 'master', 'volume' => $opt{'-V'}}
+    }
     for my $conn_vol (@volumes) {
         my ($connection, $volume) 
             = ($conn_vol->{'connection'}, $conn_vol->{'volume'});
@@ -81,6 +86,7 @@ sub main{
 
     # Mute connections.
     my @to_mute = @{$opt{'--mute'} || []};
+    push @to_mute, 'master' if $opt{'-M'};
     for my $connection (@to_mute) {
         $connection = 'master' 
             if !defined $connection || $connection =~ m/\A\z/xms;
@@ -151,7 +157,7 @@ All devices are updated if not supplied.
 =for Euclid:
     target.default: undef
 
-=item -t [<to_toggle>] | --toggle [=] [<to_toggle>]
+=item -t <to_toggle> | --toggle [=] <to_toggle>
 
 Toggle a connection from an inactive state to an active one, or vice 
 versa, depending on its current state.
@@ -159,19 +165,19 @@ versa, depending on its current state.
 <to_toggle> can be any of 'master', 'speaker', 'headphone', 'mic', 
 or 'beep'.
 
-'master' will be toggled if no connection is named.
-
 =for Euclid:
 	repeatable
 	to_toggle.type: /master|speaker|headphone|mic|beep/
 
-=item -v [<connection>:]<volume> | --set-volume [=] [<connection>:]<volume>
+=item -T
+
+Toggle the master connection.
+
+=item -v <connection>:<volume> | --set-volume [=] <connection>:<volume>
 
 Set the volume on a specified connection. 
 
 <volume> is a percentage; a number in range [0,1].
-
-'master' volume will be set if no connection is named.
 
 You may specify multiple -v  options in one command. If you specify more
 than one for the same connection the last one will take affect after the
@@ -182,7 +188,14 @@ program has completed.
 	connection.type: /master|speaker|headphone|mic|beep|pcm/
 	volume.type: number, 0 <= volume && volume <= 1
 
-=item -m [<mute_conn>] | --mute [=] [<mute_conn>]
+=item -V <master_vol> | --master-volume [=] <master_vol>
+
+Set the master volume
+
+for Euclid:
+	volume.type: number, 0 <= volume && volume <= 1
+
+=item -m <mute_conn> | --mute [=] <mute_conn>
 
 Mute a specified connection. 
 
@@ -197,6 +210,10 @@ This option is repeatable.
 =for Euclid:
 	repeatable
 	mute_conn.type: /master|speaker|headphone|mic|beep|pcm/
+
+=item -M
+
+Mute the master connection
 
 =item -b <boost> | --set-mic-boost [=] <boost>
 
