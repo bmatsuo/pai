@@ -47,10 +47,9 @@ my %control_names = (
 #   Name of the $type (switch/volume/...) controller for $connection
 #   (speaker/headphone/...).
 sub control_name {
-    my ($class,$connection, $type) = @_;
+    my ($class, $connection, $type) = @_;
 
     my $control_name_ref = $control_names{$connection};
-
 
     croak("Couldn't find connection  $connection") 
         if !defined $control_name_ref;
@@ -245,12 +244,17 @@ sub _is_valid_level {
 sub control_toggle {
     my ($class, $control) = @_;
 
-    my $boolean = control_switch($control);
+    #my $boolean = control_switch($control);
+    for my $value (@{$control->{'values'}}) {
+        my $bool = $value->{'data'};
+        $value->{'data'} = $bool eq 'true' ? 'false' : 'true';
+    }
 
-    return 
-        control_switch(
-            $control, 
-            $boolean =~ m/\Atrue\z/xms ? 'true' : 'false');
+    return;
+    #return 
+    #    control_switch(
+    #        $control, 
+    #        (defined $boolean && $boolean eq 'true' ? 'false' : 'true') );
 }
 
 # Subroutine:   control_switch($control, $boolean)
@@ -273,14 +277,15 @@ sub control_switch {
     croak("control $name does not accept boolean values.\n")
         if (! $control->{'type'} eq 'BOOLEAN' );
 
-    if (!defined $boolean) {
+    if (defined $boolean) {
         for my $value (@{$control->{'values'}}) {
             $value->{'data'} = $boolean;
         }
         return $boolean;
     }
 
-    return map {$_->{'data'}} @{$control->{'values'}};
+    return $control->{'values'}->[0]->{'data'} || 'true';
+    #map {$_->{'data'}} @{$control->{'values'}};
 }
 
 # Subroutine:   control_level($control, $level)

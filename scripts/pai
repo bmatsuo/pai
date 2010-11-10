@@ -56,7 +56,7 @@ sub main{
     my @to_toggle = @{$opt{'--toggle'} || []};
     for my $connection (@to_toggle) {
         $connection = 'master' 
-            if !defined $connection or $connection =~ m/\A\z/xms;
+            if !defined $connection || $connection =~ m/\A\z/xms;
         App::Pai::AlsaState->control_toggle(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
@@ -70,7 +70,7 @@ sub main{
         my ($connection, $volume) 
             = ($conn_vol->{'connection'}, $conn_vol->{'volume'});
         $connection = 'master' 
-            if !defined $connection or $connection =~ m/\A\z/xms;
+            if !defined $connection || $connection =~ m/\A\z/xms;
         App::Pai::AlsaState->control_level(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
@@ -83,11 +83,11 @@ sub main{
     my @to_mute = @{$opt{'--mute'} || []};
     for my $connection (@to_mute) {
         $connection = 'master' 
-            if !defined $connection or $connection =~ m/\A\z/xms;
+            if !defined $connection || $connection =~ m/\A\z/xms;
         App::Pai::AlsaState->control_level(
             App::Pai::AlsaState->find_control_named(
                 App::Pai::AlsaState->control_name(
-                    $connection, 
+                    $connection,
                     'volume'), 
                 $current_alsa_state), 
             0); }
@@ -151,19 +151,19 @@ All devices are updated if not supplied.
 =for Euclid:
     target.default: undef
 
-=item -t [<connection>] | --toggle [=] [<connection>]
+=item -t [<to_toggle>] | --toggle [=] [<to_toggle>]
 
 Toggle a connection from an inactive state to an active one, or vice 
 versa, depending on its current state.
 
-<connection> can be any of 'master', 'speaker', 'headphone', 'mic', 
+<to_toggle> can be any of 'master', 'speaker', 'headphone', 'mic', 
 or 'beep'.
 
 'master' will be toggled if no connection is named.
 
 =for Euclid:
 	repeatable
-	connection.type: /master|speaker|headphone|mic|beep/
+	to_toggle.type: /master|speaker|headphone|mic|beep/
 
 =item -v [<connection>:]<volume> | --set-volume [=] [<connection>:]<volume>
 

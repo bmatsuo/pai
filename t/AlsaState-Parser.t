@@ -5,7 +5,8 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 2;
+use Test::More tests => 5;
+BEGIN { use_ok('App::Pai::AlsaState') };
 BEGIN { use_ok('App::Pai::AlsaState::Parser') };
 
 #########################
@@ -136,7 +137,7 @@ state.Intel {
 		comment.tlv '0000000100000008ffffec1400000014'
 		comment.dbmin -5100
 		comment.dbmax 0
-		iface MIXER
+        iface MIXER
 		name 'PCM Playback Volume'
 		value.0 255
 		value.1 255
@@ -148,5 +149,29 @@ EOSTATE
 my $alsa_state_1 = eval {App::Pai::AlsaState::Parser->parse($state_1)};
 
 ok(!$@, "parse a 'typical' state");
+
+App::Pai::AlsaState->control_toggle(
+    App::Pai::AlsaState->find_control_named(
+        App::Pai::AlsaState->control_name(
+            'master', 
+            'switch'), 
+        $alsa_state_1));
+my $boolean 
+    = App::Pai::AlsaState->control_switch(
+        App::Pai::AlsaState->find_control_named(
+            App::Pai::AlsaState->control_name(
+                'master', 
+                'switch'), 
+            $alsa_state_1), );
+ok($boolean eq 'false');
+$boolean 
+    = App::Pai::AlsaState->control_switch(
+        App::Pai::AlsaState->find_control_named(
+            App::Pai::AlsaState->control_name(
+                'master', 
+                'switch'), 
+            $alsa_state_1), 
+        'true');
+ok($boolean eq 'true');
 
 1;
