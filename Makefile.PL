@@ -14,8 +14,7 @@ requires        'Getopt::Euclid'    => 0;
 requires        'Data::Dumper'      => 0;
 requires        'List::Util'        => 0;
 requires        'File::Temp'        => 0;
-requires        'Readonly'          => 0;
-test_requires  'Test::More'  => '0';
+test_requires   'Test::More'  => '0';
 requires_external_bin   'alsactl';
 install_script 'scripts/pai';
 
